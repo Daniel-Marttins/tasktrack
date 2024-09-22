@@ -1,0 +1,49 @@
+package com.codelab.tasktrack.entities;
+
+import com.codelab.tasktrack.types.Status;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity(name = "toDoItems")
+public class ToDoItem {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "ownerId", referencedColumnName = "id")
+    private User ownerId;
+
+    @Column(columnDefinition = "VARCHAR(100)", length = 100, nullable = false)
+    private String title;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status taskStatus;
+
+    @Column(columnDefinition = "VARCHAR(255)", nullable = false)
+    private String description;
+
+    @Column()
+    private boolean favorite;
+
+    @Column(columnDefinition = "VARCHAR(100)", length = 100)
+    private String color;
+
+    @Column()
+    private LocalDateTime createAt;
+
+    @Column()
+    private LocalDateTime updateAt;
+
+}
