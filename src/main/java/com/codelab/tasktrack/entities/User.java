@@ -1,5 +1,6 @@
 package com.codelab.tasktrack.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,12 +14,15 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "entities")
+@Entity(name = "users")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(columnDefinition = "BIGINT", nullable = false)
+    private Long uid;
 
     @Column(columnDefinition = "VARCHAR(100)", length = 100, nullable = false)
     private String username;
@@ -33,6 +37,7 @@ public class User {
     private String imgUrl;
 
     @OneToMany(mappedBy = "ownerId", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<ToDoItem> toDoItems;
 
     @Column(columnDefinition = "TIMESTAMP", nullable = false)

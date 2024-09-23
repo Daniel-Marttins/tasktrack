@@ -1,6 +1,8 @@
 package com.codelab.tasktrack.entities;
 
 import com.codelab.tasktrack.types.Status;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,8 +22,12 @@ public class ToDoItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(columnDefinition = "BIGINT", nullable = false)
+    private Long uid;
+
     @ManyToOne
     @JoinColumn(name = "ownerId", referencedColumnName = "id")
+    @JsonBackReference
     private User ownerId;
 
     @Column(columnDefinition = "VARCHAR(100)", length = 100, nullable = false)
