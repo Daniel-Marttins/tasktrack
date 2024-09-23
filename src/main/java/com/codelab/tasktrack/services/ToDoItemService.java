@@ -48,7 +48,7 @@ public class ToDoItemService {
 
     @Transactional
     public List<ToDoItem> getAllToDoItems(Long id) {
-        if(userRepository.findById(id).isEmpty()) throw new UserException.UserNotFoundException("User ID " + id + " not found!");
+        if(userRepository.findById(id).isEmpty()) throw new UserException.UserNotFoundException("User not found!");
         return doItemRepository.findByOwnerId_Id(id);
     }
 

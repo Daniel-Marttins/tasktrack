@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -97,11 +98,13 @@ public class UserService {
         Date now = new Date();
         Date validity = new Date(now.getTime() + expirationTime);
 
+        String base64SecretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(SignatureAlgorithm.HS256, base64SecretKey)
                 .compact()
         ;
     }
