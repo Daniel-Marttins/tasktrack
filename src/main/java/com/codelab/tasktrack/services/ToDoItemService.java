@@ -55,6 +55,7 @@ public class ToDoItemService {
     public ToDoItem updateToDo(Long id, ToDoItem updateToDo) {
         return doItemRepository.findById(id)
                 .map(existingToDo -> {
+                    updateToDo.setUid(existingToDo.getUid());
                     updateToDo.setUpdateAt(LocalDateTime.now());
                     updateToDo.setOwnerId(existingToDo.getOwnerId());
                     SystemUtils.modelMapper.map(updateToDo, existingToDo);
