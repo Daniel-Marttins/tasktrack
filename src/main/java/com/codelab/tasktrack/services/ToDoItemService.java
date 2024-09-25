@@ -29,7 +29,6 @@ public class ToDoItemService {
     @Transactional
     public ToDoItem saveToDoItem(Long ownerId, ToDoItem item) {
         int quantityToDo = toDoQuantity(ownerId).size();
-        item.setTaskStatus(Status.TODO);
         item.setUid(quantityToDo > 0 ? quantityToDo + 1L : 1L);
         item.setCreateAt(LocalDateTime.now());
         item.setUpdateAt(LocalDateTime.now());
