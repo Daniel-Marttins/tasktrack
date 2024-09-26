@@ -67,7 +67,7 @@ public class ToDoItemService {
     @Transactional
     public void deleteToDoItem(Long id) {
         ToDoItem item = doItemRepository.findById(id).orElseThrow(() -> new ToDoException
-                .ToDoNotFoundException("To-do-item ID " + id + " not found!")
+                .ToDoNotFoundException("To-do-item not found!")
         );
         doItemRepository.delete(item);
     }
