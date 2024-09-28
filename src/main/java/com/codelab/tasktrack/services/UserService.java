@@ -32,9 +32,6 @@ public class UserService {
     public User saveUser(User user) {
         if (userRepository.findByEmail(user.getEmail()) != null) throw new UserException
                 .UserExistsException("User already exists");
-
-        int quantityUser = userQuantity().size();
-        user.setUid(quantityUser > 0 ? quantityUser + 1L : 1L);
         user.setPassword(SystemUtils.getInstance().encryptPassword(user.getPassword()));
         user.setCreateAt(LocalDateTime.now());
         user.setUpdateAt(LocalDateTime.now());
@@ -69,11 +66,13 @@ public class UserService {
     public User updateUser(Long id, User updatedUser) {
         return userRepository.findById(id)
                 .map(existingUser -> {
+                    updatedUser.setCreateAt(existingUser.getCreateAt());
                     updatedUser.setUpdateAt(LocalDateTime.now());
+                    updatedUser.setPassword(existingUser.getPassword());
                     SystemUtils.modelMapper.map(updatedUser, existingUser);
                     return userRepository.save(existingUser);
                 }).orElseThrow(() -> new UserException
-                        .UserNotFoundException("User ID " + id + " not found!")
+                        .UserNotFoundException("User ID not found!")
                 );
     }
 

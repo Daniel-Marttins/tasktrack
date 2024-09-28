@@ -21,9 +21,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "BIGINT", nullable = false)
-    private Long uid;
-
     @Column(columnDefinition = "VARCHAR(100)", length = 100, nullable = false)
     private String username;
 
