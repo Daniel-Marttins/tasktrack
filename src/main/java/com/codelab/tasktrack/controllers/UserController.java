@@ -1,5 +1,6 @@
 package com.codelab.tasktrack.controllers;
 
+import com.codelab.tasktrack.dtos.ChangePassword;
 import com.codelab.tasktrack.entities.User;
 import com.codelab.tasktrack.exceptions.UserException;
 import com.codelab.tasktrack.services.UserService;
@@ -22,12 +23,12 @@ public class UserController {
     @PostMapping(value = "/create")
     public ResponseEntity<?> createUser(@RequestBody User user) {
         try {
-            User savedUser = userService.saveUser(user);
+            String savedUser = userService.saveUser(user);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
         } catch (UserException.UserExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating user: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
@@ -68,12 +69,24 @@ public class UserController {
     @PutMapping(value = "/update")
     public ResponseEntity<?> updateUser(@RequestParam(value = "id") Long id, @RequestBody User updatedUser) {
         try {
-            User user = userService.updateUser(id, updatedUser);
-            return ResponseEntity.status(HttpStatus.OK).body(user);
+            String userToken = userService.updateUser(id, updatedUser);
+            return ResponseEntity.status(HttpStatus.OK).body(userToken);
         } catch (UserException.UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Failed to update user: " + e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating user: " + e.getMessage());
+        }
+    }
+
+    @PutMapping(value = "/update/password")
+    public ResponseEntity<?> updatePassword(@RequestParam(value = "id") Long id, @RequestBody ChangePassword changePassword) {
+        try {
+            userService.updatePassword(id, changePassword);
+            return ResponseEntity.status(HttpStatus.OK).body("Password changed!");
+        } catch (UserException.UserUnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 

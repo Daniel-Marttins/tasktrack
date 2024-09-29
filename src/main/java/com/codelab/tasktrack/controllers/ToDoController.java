@@ -1,10 +1,12 @@
 package com.codelab.tasktrack.controllers;
 
+import com.codelab.tasktrack.dtos.ToDoItemUpdateDTO;
 import com.codelab.tasktrack.entities.ToDoItem;
 import com.codelab.tasktrack.entities.User;
 import com.codelab.tasktrack.exceptions.ToDoException;
 import com.codelab.tasktrack.exceptions.UserException;
 import com.codelab.tasktrack.services.ToDoItemService;
+import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,13 +58,14 @@ public class ToDoController {
     }
 
     @PutMapping(value = "/update")
-    public ResponseEntity<?> updateToDo(@RequestParam(value = "id") Long id, @RequestBody ToDoItem toDoItem) {
+    public ResponseEntity<?> updateToDo(@RequestParam(value = "id") Long id, @RequestBody ToDoItemUpdateDTO toDoItem) {
         try {
             ToDoItem item = doItemService.updateToDo(id, toDoItem);
             return ResponseEntity.status(HttpStatus.OK).body(item);
         } catch (ToDoException.ToDoNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Failed to update to-do-item: " + e.getMessage());
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating to-do-item: " + e.getMessage());
         }
     }

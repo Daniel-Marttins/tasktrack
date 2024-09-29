@@ -1,5 +1,6 @@
 package com.codelab.tasktrack.services;
 
+import com.codelab.tasktrack.dtos.ToDoItemUpdateDTO;
 import com.codelab.tasktrack.entities.ToDoItem;
 import com.codelab.tasktrack.entities.User;
 import com.codelab.tasktrack.exceptions.ToDoException;
@@ -52,12 +53,10 @@ public class ToDoItemService {
     }
 
     @Transactional
-    public ToDoItem updateToDo(Long id, ToDoItem updateToDo) {
+    public ToDoItem updateToDo(Long id, ToDoItemUpdateDTO updateToDo) {
         return doItemRepository.findById(id)
                 .map(existingToDo -> {
-                    updateToDo.setUid(existingToDo.getUid());
                     updateToDo.setUpdateAt(LocalDateTime.now());
-                    updateToDo.setOwnerId(existingToDo.getOwnerId());
                     SystemUtils.modelMapper.map(updateToDo, existingToDo);
                     return doItemRepository.save(existingToDo);
                 }).orElseThrow(() -> new ToDoException

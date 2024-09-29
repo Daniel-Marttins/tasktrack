@@ -1,5 +1,6 @@
 package com.codelab.tasktrack.services;
 
+import com.codelab.tasktrack.dtos.ChangePassword;
 import com.codelab.tasktrack.entities.User;
 import com.codelab.tasktrack.exceptions.UserException;
 import com.codelab.tasktrack.repositories.UserRepository;
@@ -29,13 +30,13 @@ public class UserService {
     private long expirationTime;
 
     @Transactional
-    public User saveUser(User user) {
+    public String saveUser(User user) {
         if (userRepository.findByEmail(user.getEmail()) != null) throw new UserException
                 .UserExistsException("User already exists");
         user.setPassword(SystemUtils.getInstance().encryptPassword(user.getPassword()));
         user.setCreateAt(LocalDateTime.now());
         user.setUpdateAt(LocalDateTime.now());
-        return userRepository.save(user);
+        return generateToken(userRepository.save(user));
     }
 
     @Transactional
@@ -63,23 +64,36 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUser(Long id, User updatedUser) {
+    public String updateUser(Long id, User updatedUser) {
         return userRepository.findById(id)
                 .map(existingUser -> {
                     updatedUser.setCreateAt(existingUser.getCreateAt());
                     updatedUser.setUpdateAt(LocalDateTime.now());
                     updatedUser.setPassword(existingUser.getPassword());
                     SystemUtils.modelMapper.map(updatedUser, existingUser);
-                    return userRepository.save(existingUser);
+                    return generateToken(existingUser);
                 }).orElseThrow(() -> new UserException
                         .UserNotFoundException("User ID not found!")
                 );
     }
 
     @Transactional
+    public void updatePassword(Long id, ChangePassword password) {
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new UserException
+                .UserNotFoundException("User ID not found!")
+        );
+
+        if (!SystemUtils.passwordEncoder.matches(password.getOldPassword(), existingUser.getPassword())) throw new UserException
+                .UserUnauthorizedException("Incorrect password.");
+
+        existingUser.setPassword(SystemUtils.getInstance().encryptPassword(password.getNewPassword()));
+        userRepository.save(existingUser);
+    }
+
+    @Transactional
     public void deleteUser(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserException
-                .UserNotFoundException("User ID " + id + " not found!")
+                .UserNotFoundException("User ID not found!")
         );
         userRepository.delete(user);
     }
