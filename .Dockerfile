@@ -1,11 +1,16 @@
-# Use a imagem do OpenJDK 21
-FROM openjdk:21-jdk-slim
+FROM ubuntu:latest AS build
 
-# Diretório de trabalho
-WORKDIR /app
-
-# Copiar o projeto
+RUN apt-get update
+RUN apt-get install openjdk-21-jdk -y
 COPY . .
 
-# Tornar o mvnw executável e executar o Maven
-RUN chmod +x ./mvnw && ./mvnw -DoutputFile=target/mvn-dependency-list.log -B -DskipTests clean dependency:list install
+RUN apt-get install maven -y
+RUN mvn clean install
+
+FROM openjdk:21-jdk-slim
+
+EXPOSE 8080
+
+COPY --from=build /target/tasktrack-0.0.1-SNAPSHOT.jar app.jar
+
+ENTRYPOINT [ "java", "-jar", "app.jar" ]
